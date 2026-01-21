@@ -1,0 +1,9 @@
+react
+react_dom
+react_router_dom
+vite
+fastapi 
+middleware.cors 
+pydantic 
+openai
+fastapi
