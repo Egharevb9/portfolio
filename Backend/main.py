@@ -78,7 +78,7 @@ def chat(data: Question):
 
     # Fallback to OpenAI
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4.0-",
         messages=[
             {"role": "system", "content": "You are an assistant answering questions about Esther's portfolio."},
             {"role": "user", "content": data.question},
