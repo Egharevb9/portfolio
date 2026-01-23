@@ -77,13 +77,19 @@ def chat(data: Question):
             return {"answer": OFFLINE_ANSWERS[key]}
 
     # Fallback to OpenAI
-    response = openai.ChatCompletion.create(
-        model="gpt-4.0-",
-        messages=[
-            {"role": "system", "content": "You are an assistant answering questions about Esther's portfolio."},
-            {"role": "user", "content": data.question},
-        ],
+
+    chatopenAI(model="gpt-40-mini", temperature=0, api_key=self.api_key)
+    self.embeddings = openAIEmbeddings(
+          model="text-embedding-3-small",
+          api_key=self.api_key
     )
+    # response = openai.ChatCompletion.create(
+    #     model="gpt-4.0-",
+    #     messages=[
+    #         {"role": "system", "content": "You are an assistant answering questions about Esther's portfolio."},
+    #         {"role": "user", "content": data.question},
+    #     ],
+    # )
 
     return {"answer": response.choices[0].message.content}
 

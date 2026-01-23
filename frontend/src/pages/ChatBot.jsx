@@ -4,17 +4,34 @@ function ChatBot() {
 	const [open, setOpen] = useState(false);
 	const [input, setInput] = useState("");
 	const [messages, setMessages] = useState([]);
-	const chatUrl = import.meta.env.VITE_CHAT_URL;
+	const [loading, setLoading] = useState(false);
+	// prefer explicit VITE_CHAT_URL, fallback to VITE_API_URL + '/chat'
+	const chatUrl = import.meta.env.VITE_CHAT_URL || (import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/chat` : "/chat");
 
 	async function ask() {
-		const res = await fetch(chatUrl, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ question: input }),
-		});
-		const data = await res.json();
-		setMessages([...messages, { q: input, a: data.answer }]);
-		setInput("");
+		if (!input || loading) return;
+		setLoading(true);
+		try {
+			const res = await fetch(chatUrl, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ question: input }),
+			});
+
+			if (!res.ok) {
+				const text = await res.text().catch(() => "");
+				throw new Error(`Server responded with ${res.status} ${text}`);
+			}
+
+			const data = await res.json();
+			setMessages((prev) => [...prev, { q: input, a: data?.answer ?? "(no answer)" }]);
+			setInput("");
+		} catch (err) {
+			console.error("Chat request failed:", err);
+			setMessages((prev) => [...prev, { q: input, a: `Error: ${err.message}` }]);
+		} finally {
+			setLoading(false);
+		}
 	}
 
 
